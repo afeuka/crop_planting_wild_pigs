@@ -3,8 +3,6 @@
 ### Date: 19AUG24
 ### Notes:
 
-# setwd("C:/Users/Abigail.Feuka/OneDrive - USDA/Feral Hogs/Crops/crop_planting_anom")
-setwd("~/Desktop/Crops/crop_planting_anom")
 library(tidyverse)
 
 source("./Functions/fun_response.R")
@@ -59,7 +57,6 @@ for(i in 1:nrow(beta_tab)){
     s <- samples_all[,(grepl("s",colnames(samples_all)) | grepl("chain_idx",colnames(samples_all))) &
                        !grepl("lscale",colnames(samples_all)) &
                        !grepl("tau_s",colnames(samples_all))]
-    # tau <- samples_all[,"tau"]
     
     fun_take_op[[i]] <- fun_response(dat_df=dat_op$dat_clean,
                                      scale_cov_name=dat_op$covsx$cov[dat_op$covsx$name==beta_tab$cov[i]],
@@ -78,7 +75,6 @@ for(i in 1:nrow(beta_tab)){
     geom_ribbon(aes(x=cov_bt,ymin=lci,ymax=uci,fill=county_idx),alpha=0.1)+
     geom_line(aes(x=cov_bt,y=mn,col=county_idx),lwd=1)+
     guides(fill="none",color="none")+
-    # xlab(dat_op$covsx$name[dat_op$covsx$name==beta_tab$cov[i]]) +
     xlab("Proportion of county with wild pigs")+
     geom_hline(yintercept=0,lty=2)+
     ylab(expression(paste("County-level planting anomaly (km"^"2",")")))+
@@ -87,8 +83,6 @@ for(i in 1:nrow(beta_tab)){
           panel.background = element_blank(),
           axis.line=element_line(color="grey55"))
 }
-
-cowplot::plot_grid(g[[1]],g[[2]])
 g[[3]]
 
 ggsave(filename=paste0(model_dir,"/Model outputs/",subfolder,"/Plots/Combined Figures/func_response.jpeg"),
@@ -99,8 +93,6 @@ beta_tab<- read.csv(paste0(model_dir,"/Model outputs/",
                            subfolder,"/Plots/Combined Figures/op_betas_all_table.csv"))
 beta_tab <- beta_tab %>% select(-X) 
 beta_tab$cov_sd <- NA
-# beta_tab$cov[beta_tab$cov=="Prop. of county with wild pigs"] <-"Prop. of county with pigs"
-# beta_tab$cov[beta_tab$cov=="Take per wild pig intensity 5 yr trend"] <-"Take per hog intensity 5 yr trend"
 
 for(i in 1:nrow(beta_tab)){
   dat_op <- clean_crop_dat(dat_orig=dat,commod_name = tolower(beta_tab$crop[i]),
