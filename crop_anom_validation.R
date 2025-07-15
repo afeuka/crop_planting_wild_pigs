@@ -6,11 +6,9 @@
 library(nimble)
 library(tidyverse)
 
-# setwd("C:/Users/Abigail.Feuka/OneDrive - USDA/Feral Hogs/Crops")
-
 source("./crop_planting_anom/Functions/clean_crop_dat.R")
 
-mod_typ <- "spatial" #"region_multi"
+mod_typ <- "spatial" 
 
 nb=FALSE
 temporal=TRUE
@@ -46,91 +44,6 @@ for(commod_idx in 1:length(commod_names_c)){
   } else {
     stop("Must include take covariate. Check clean_crop_dat.R")
   }
-  
-  # 
-  # ## load samples -----------------
-  # load(paste0("./Model outputs/",subfolder,"/",
-  #             commod_names[commod_idx],"_region_multi.RData"))
-  # 
-  # ##model checks ---------------------
-  # ypred <- samples_all[,grep("ypred",colnames(samples_all))]
-  # ypred_sum <- data.frame(mn=colMeans(ypred),
-  #                         lci=sapply(1:ncol(ypred),function(i)quantile(ypred[,i],probs=0.025)),
-  #                         uci=sapply(1:ncol(ypred),function(i)quantile(ypred[,i],probs=0.975)),
-  #                         obs = dat_clean$plant.anom)
-  # 
-  # ypred_sum$resid <- ypred_sum$obs - ypred_sum$mn
-  # ypred_sum$std_resid <- scale(ypred_sum$resid)
-  # 
-  # ypred_sum = cbind(ypred_sum,dat_clean)
-  # ypred_sum <- ypred_sum %>%
-  #   left_join(dat_clean %>% dplyr::select(GEOID) %>% distinct())
-  # 
-  # ###posterior predictive distribution ----------------
-  # ggplot(ypred_sum %>% pivot_longer(cols=c("mn","obs"),
-  #                                   values_to="value",
-  #                                   names_to="typ"))+
-  #   geom_histogram(aes(x=value,fill=typ),alpha=0.5)+
-  #   scale_fill_discrete(name="",labels=c("Post pred",
-  #                                        "Data"))+
-  #   ggtitle(paste(commod_names_t[commod_idx]," - Posterior predictions"))
-  # ggsave(filename=paste0("./Model outputs/",subfolder,"/Plots/",commod_names_t[commod_idx],"/data_post_dist.jpeg"),
-  #        device="jpeg",height=5,width=7,units="in")
-  # 
-  # ##simulated model stats --------------------
-  # sd <- function(x){sqrt(var(x))}
-  # ypred_stat <- data.frame(mn=rowMeans(ypred),
-  #                          sd=apply(ypred,1,sd),
-  #                          idx=1:nrow(ypred))
-  # ggplot()+
-  #   geom_histogram(data=ypred_stat,aes(x=mn))+
-  #   geom_vline(xintercept=mean(dat_clean$plant.anom),col="red",lty=2)+
-  #   ggtitle(paste(commod_names_t[commod_idx]," - Posterior data mean"))
-  # ggsave(filename=paste0("./Model outputs/",subfolder,"/Plots/",commod_names_t[commod_idx],"/pval_mn.jpeg"),
-  #        device="jpeg",width=7,height=5,units="in")
-  # 
-  # ggplot()+
-  #   geom_histogram(data=ypred_stat,aes(x=sd))+
-  #   geom_vline(xintercept=sqrt(var(dat_clean$plant.anom)),col="red",lty=2)+
-  #   ggtitle(paste(commod_names_t[commod_idx]," - Posterior data SD"))
-  # ggsave(filename=paste0("./Model outputs/",subfolder,"/Plots/",commod_names_t[commod_idx],"/pval_sd.jpeg"),
-  #        device="jpeg",width=7,height=5,units="in")
-  # 
-  ### standardized residuals--------------------
-  # ggplot(ypred_sum)+
-  #   geom_point(aes(x=mn,y=std_resid,size=long),alpha=0.7)+
-  #   geom_hline(yintercept=0,col="blue",lty=2)
-  # 
-  # covs_outliers <- ypred_sum %>% filter(abs(std_resid)<=5) %>% 
-  #   pivot_longer(cols=c(grep("ever.pigs",colnames(ypred_sum)),
-  #                       grep("sc",colnames(ypred_sum)),
-  #                       grep("lat",colnames(ypred_sum)),
-  #                       grep("long",colnames(ypred_sum))),
-  #                names_to="cov",values_to="value") %>% 
-  #   group_by(cov) %>% 
-  #   summarise(min=min(value),
-  #             max=max(value),
-  #             typ="outlier")
-  # 
-  # covs_all <- ypred_sum %>% 
-  #   pivot_longer(cols=c(grep("ever.pigs",colnames(ypred_sum)),
-  #                       grep("sc",colnames(ypred_sum)),
-  #                       grep("lat",colnames(ypred_sum)),
-  #                       grep("long",colnames(ypred_sum))),
-  #                names_to="cov",values_to="value") %>% 
-  #   group_by(cov) %>% 
-  #   summarise(min=min(value),
-  #             max=max(value),
-  #             typ="all")
-  # 
-  # covs_resid <- full_join(covs_outliers,covs_all) 
-  # 
-  # ggplot(covs_resid)+
-  #   geom_errorbar(aes(x=cov,ymin=min,ymax=max,col=typ),
-  #                 position = position_dodge(width=0.5))+
-  #   theme(axis.text.x=element_text(angle=90,hjust=1))
-  
-  # rm(samples_all)
   
   # only counties with pigs -------------
   ## load samples -----------------
@@ -200,49 +113,12 @@ for(commod_idx in 1:length(commod_names_c)){
   ssr <- sum(ypred_sum$resid^2)
   sst <- sum((ypred_sum$plant.anom-mean(ypred_sum$plant.anom))^2)
   r2_v[commod_idx] <- 1- ssr/sst
-  
-  # ### standardized residuals--------------------
-  # ggplot(ypred_sum)+
-  #   geom_point(aes(x=mn,y=std_resid,size=long),alpha=0.7)+
-  #   geom_hline(yintercept=0,col="blue",lty=2)
-  # 
-  # covs_outliers <- ypred_sum %>% filter(std_resid<=-5) %>% 
-  #   pivot_longer(cols=c(grep("sc",colnames(ypred_sum)),
-  #                       grep("lat",colnames(ypred_sum)),
-  #                       grep("long",colnames(ypred_sum))),
-  #                names_to="cov",values_to="value") %>% 
-  #   group_by(cov) %>% 
-  #   summarise(min=min(value),
-  #             max=max(value),
-  #             typ="outlier")
-  # 
-  # covs_all <- ypred_sum %>% 
-  #   pivot_longer(cols=c(grep("sc",colnames(ypred_sum)),
-  #                       grep("lat",colnames(ypred_sum)),
-  #                       grep("long",colnames(ypred_sum))),
-  #                names_to="cov",values_to="value") %>% 
-  #   group_by(cov) %>% 
-  #   summarise(min=min(value),
-  #             max=max(value),
-  #             typ="all")
-  # 
-  # covs_resid <- full_join(covs_outliers,covs_all) 
-  # 
-  # ggplot(covs_resid)+
-  #   geom_errorbar(aes(x=cov,ymin=min,ymax=max,col=typ),
-  #                 position = position_dodge(width=0.5))+
-  #   theme(axis.text.x=element_text(angle=90,hjust=1))
-  
+
 }
 pval_df <- data.frame(Crop=commod_names_t,pval)
 r2_df <- data.frame(Crop=commod_names_t,r2_v)
 fit_df <- pval_df %>% left_join(r2_df)
 
-# if(!dir.exists(paste0("C:/Users/Abigail.Feuka/OneDrive - USDA/Feral Hogs/Crops/Model outputs/",
-#                       subfolder,"/Plots/Combined Figures"))){
-#   dir.create(paste0("C:/Users/Abigail.Feuka/OneDrive - USDA/Feral Hogs/Crops/Model outputs/",
-#                          subfolder,"/Plots/Combined Figures"))
-# }
 if(!dir.exists(paste0("./Model outputs/",
                       subfolder,"/Plots/Combined Figures"))){
   dir.create(paste0("./Model outputs/",
