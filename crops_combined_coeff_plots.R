@@ -4,8 +4,6 @@
 
 library(tidyverse)
 
-# setwd("C:/Users/Abigail.Feuka/OneDrive - USDA/Feral Hogs/Crops")
-
 source("./crop_planting_anom/Functions/clean_crop_dat.R")
 
 load("./Data/all_crops_anom_scaled_2023_2009_anom.RData")
@@ -153,9 +151,6 @@ lscale_long_trace_all <- do.call("rbind",lscale_long_trace)
 if(mod_typ=="spatial"){
   tau_s_long_trace_all <- do.call("rbind",tau_s_long_trace)
 }
-
-# beta_all$cov[beta_all$cov=="Take per hog intensity 5 yr trend"] <- "Take per wild pig intensity 5 yr trend"
-# beta_all$cov[beta_all$cov=="Prop. of county with pigs"] <- "Prop. of county with wild pigs"
 
 beta_all$cov <- factor(beta_all$cov,
                        levels=rev(c(#"Intercept",
