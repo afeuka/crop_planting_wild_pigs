@@ -2,7 +2,7 @@ library(tidyverse)
 library(rnassqs)
 
 #api key
-nassqs_auth('7838DEE7-D776-3645-BA19-2FA3803005E0')
+nassqs_auth('xxxxxxxxxx')
 
 #sales
 sales <- nassqs(year='2022',agg_level_desc="NATIONAL",statisticcat_desc="SALES",
