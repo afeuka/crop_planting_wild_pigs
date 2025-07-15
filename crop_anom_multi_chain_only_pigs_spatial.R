@@ -10,9 +10,6 @@ library(tigris)
 library(sf)
 options(tigris_use_cache = TRUE)
 
-# setwd("C:/Users/Abigail.Feuka/OneDrive - USDA/Feral Hogs/Crops")
-setwd("/Users/afeuka/Desktop/Crops")
-
 source("./crop_planting_anom/Functions/clean_crop_dat.R")
 
 nb=FALSE
@@ -86,12 +83,6 @@ for(commod_idx in 1:length(commod_names_c)){
     
   })#end of nimblecode
 
-  ##fit model --------------------
-  # nChains <- 1
-  # niter <- 10000
-  # burnProp <- 0.2
-  # thin <- 1
-  
   ###multi chain --------------------
   nChains <- 3
   niter <- 100000
@@ -148,13 +139,6 @@ for(commod_idx in 1:length(commod_names_c)){
     Cmod <- compileNimble(mod,Cmcmc) #compiled model
     
     ##fit model --------------------
-    # mcmc.out <- runMCMC(Cmod$Cmcmc,
-    #                     niter = 0,
-    #                     thin= thin,
-    #                     nburn = 0,
-    #                     # setSeed = 1:nChains,
-    #                     nchains = nChains)
-    
     mcmc.out <- runMCMC(Cmod$Cmcmc, 
                         niter = niter, 
                         nburn = niter*burnProp,
