@@ -9,7 +9,6 @@ clean_crop_dat <- function(dat_orig, #original data, uncleaned
                            nb=T,
                            temporal=T,
                            only_pigs=F #logical, only include counties with pigs
-                           # pig.cov #column name of covariate used for pig inference
                            ){
   require(tidyverse)
   
@@ -36,14 +35,11 @@ clean_crop_dat <- function(dat_orig, #original data, uncleaned
     cov=c("plant.anom",
           "GEOID",
           "division_grp",
-          # "pig.last.year.sc",
           "temp5trend.sc",
           "precip5trend.sc",
           "reg.roi5trend.sc",
           if(nb){"plant.anom.nb.sc"},
           if(temporal){"plant.anom.prev.sc"},
-          # "take5trend.sc",
-          # "take.hog.intens.prev.sc",
           "take.hog.intens.5yeartrend.sc",
           "prop.nfsp.sc",
           "crp.prop.sc",
@@ -52,28 +48,18 @@ clean_crop_dat <- function(dat_orig, #original data, uncleaned
     name=c("Planting anomaly",
            "County",
            "Ecoregion",
-           # "Pig presence previous year",
            "Temperature 5 yr trend",
            "Precipitation 5 yr trend",
            "ROI 5 yr trend",
            if(nb){"Neighboring planting anomaly"},
            if(temporal){"Previous year's planting anomaly"},
-           # "Take 5 yr trend",
-           # "Take per hog intensity previous year",
            "Take per wild pig intensity 5 yr trend",
            "Prop. of county with wild pigs",
            "Prop. CRP land",
            "CRP x pigs"
     ))
-  # pig_cov_name <- covs_all$name[which(covs_all$cov==paste0(pig_cov,".sc"))]
   
   covsx_all <- covs_all[-(1:3),]
-  
-  # if(pig_cov=="ever.pigs" | pig_cov=="nfsp.level" | pig_cov=="hog.intensity"){
-  #   tidx <- which(covsx_all$cov=="take5trend.sc")
-  #   xmat <- xmat[,-tidx]
-  #   covsx_all <- covsx_all[-tidx,]
-  # }
   
   dat_clean <- na.omit(dat[,covs_all$cov])
   dat_clean$county_idx <- as.numeric(factor(dat_clean$GEOID))
