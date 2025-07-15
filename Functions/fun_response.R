@@ -3,22 +3,13 @@
 ### Date: 19AUG24
 ### Notes:
 
-# dat_df <- dat_op$dat_clean
-# scale_cov_name <- "crp.nfsp.sc"
-# beta_long <- beta_long_all
-# s_long <- s_long_all
-# covsx <- dat_op$covsx
-# x_incr<-0.5
-# spatial=TRUE
-
 fun_response <- function(dat_df, #dat_clean or dat_clean_op
                          scale_cov_name, #scaled covariate column name from dat_df
                          covsx, #covariate matrix, in order fit to modek
                          beta_long,#pivoted mcmc samples for beta coefficients
                          s, #samples[,"s"] for spatial random effect
-                         # tau,#vector of mcmc samples for tau regression error
                          x_incr=0.5,#'by' argument for creating sequence of scaled x's
-                         spatial=FALSE){ #logical to include intercept in calculation (FALSE for spatial RE's)
+                         spatial=TRUE){ #logical to include intercept in calculation (FALSE for spatial RE's)
   require(tidyverse)
   
   dat_df <- as.data.frame(dat_df)
@@ -60,11 +51,6 @@ fun_response <- function(dat_df, #dat_clean or dat_clean_op
   s_long$tot_idx <- rep(1:(max(s_long$samp_idx)*max(s_long$chain_idx)),max(s_long$county_idx))
 
   if(spatial){
-    # est_cov_sc <- sapply(1:length(s_long),function(s){
-    #   sapply(1:length(beta_cov),function(i){
-    #     beta_cov[i]*anom_cov$sc + s_long$value
-    #   })
-    # })
     
     est_cov_sc <- array(NA,dim=c(nrow(anom_cov),length(beta_cov),length(unique(s_long$county_idx))))
  
@@ -88,8 +74,6 @@ fun_response <- function(dat_df, #dat_clean or dat_clean_op
     
     est_cov_sc <- sapply(1:length(beta_cov),function(i){
       beta_int[i] + beta_cov[i]*anom_cov$sc
-      # rnorm(nrow(anom_cov),beta_int[i] + beta_cov[i]*anom_cov$sc,sqrt(1/tau[i]))
-
     })
   }
   
@@ -128,6 +112,5 @@ fun_response <- function(dat_df, #dat_clean or dat_clean_op
                  values_to="uci",names_to="county_idx")
   
   est_cov_sum <- mn_long%>% left_join(md_long) %>% left_join(lci_long) %>% left_join(uci_long)
-  # est_cov_sum <- cbind.data.frame(anom_cov,est_cov_sum)
   return(est_cov_sum)
 }
